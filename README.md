@@ -2,6 +2,13 @@
 
 高校生の頃に作ったプログラムを再構築します。
 
+## やること
+
+- [ ] カーテンをコンポーネント化
+- [ ] custom hook 化
+- [ ] タイマーの安全管理
+- [ ] キーボード操作統一
+
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
