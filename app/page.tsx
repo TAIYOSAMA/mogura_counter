@@ -1,22 +1,22 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
 
   const TIME_LIMIT = 20000;
+  let stopEvent: any;
 
   const [count, setCount] = useState(0);
   const [curtainColor, setCurtainColor] = useState('');
-  const [wholeCurtainFlag, setWholeCurtainFlag] = useState(1);
-  const [isHidedWholeCurtain, setIsHidedWholeCurtain] = useState(0);
+  const [isWholeCurtainVisible, setIsWholeCurtainVisible] = useState(true);
+  const [isHidedWholeCurtain, setIsHidedWholeCurtain] = useState(false);
 
   const incrementCount = () => {
-    setCount(count + 1);
+    setCount(c => c + 1);
   }
 
   const decrementCount = () => {
-    if (count <= 0) return;
-    setCount(count -1);
+    setCount(c => Math.max(0, c - 1));
   }
 
   const showCurtain = (color: string) => {
@@ -36,13 +36,32 @@ export default function Home() {
   }
 
   const showWholeCurtain = () => {
-    setWholeCurtainFlag(1);
+    setIsWholeCurtainVisible(true);
   }
 
   const hideWholeCurtain = () => {
-    setWholeCurtainFlag(0);
-    setIsHidedWholeCurtain(1);
+    setIsWholeCurtainVisible(false);
+    setIsHidedWholeCurtain(true);
   }
+
+
+  const refresh = (event: KeyboardEvent) => {
+    if (event.key === 'r') {
+      setCount(0);
+      setCurtainColor('');
+      setIsWholeCurtainVisible(true);
+      setIsHidedWholeCurtain(false);
+      clearTimeout(stopEvent);
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('keydown', refresh);
+
+    return () => {
+      document.removeEventListener('keydown', refresh);
+    };
+  }, []);
 
   return (
     <div className="">
@@ -51,27 +70,29 @@ export default function Home() {
       </div>
       <div className={`curtain w-screen h-screen fixed top-0 left-0 ${curtainColor}`}></div>
       <div className="w-screen h-screen fixed top-0 left-0 flex justify-center items-center">
-        <button 
-          className="dec-count w-full h-full"
+        <button
+          className="dec-count w-full h-full focus:outline-none focus-visible:outline"
           onClick={decrementCount}
-          onMouseDown={showBlueCurtain}
-          onMouseUp={hideCurtain}
+          onPointerDown={showBlueCurtain}
+          onPointerUp={hideCurtain}
+          onPointerLeave={hideCurtain}
         >
         </button>
         <button
-          className="inc-count w-full h-full"
+          className="inc-count w-full h-full focus:outline-none focus-visible:outline"
           onClick={incrementCount}
-          onMouseDown={showRedCurtain}
-          onMouseUp={hideCurtain}
+          onPointerDown={showRedCurtain}
+          onPointerUp={hideCurtain}
+          onPointerLeave={hideCurtain}
         >
         </button>
       </div>
       <div
-        className={`whole-curtain w-screen h-screen fixed top-0 left-0 bg-yellow-800/20 ${wholeCurtainFlag ? '' : 'hidden'}`}
+        className={`whole-curtain w-screen h-screen fixed top-0 left-0 bg-yellow-800/20 ${isWholeCurtainVisible ? '' : 'hidden'}`}
         onClick={() => {
           if (isHidedWholeCurtain) return;
           hideWholeCurtain();
-          setTimeout(() => {showWholeCurtain();}, TIME_LIMIT);
+          stopEvent = setTimeout(() => {showWholeCurtain();}, TIME_LIMIT);
         }}
       ></div>
     </div>
